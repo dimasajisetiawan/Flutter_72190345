@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_72190345/pertemuan1.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
+
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.
@@ -60,6 +62,21 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       _counter++;
     });
+  }
+
+  void navigateLogin() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    int? isLogin = pref.getInt("is_login");
+    if(isLogin == 1){
+      Navigator.pushReplacement(context,
+      MaterialPageRoute(builder: (context) => Pertemuan1(title: "Pertemuan 1",)),
+      );
+    }
+  }
+
+  @override
+  void initState(){
+    navigateLogin();
   }
 
   @override
@@ -103,6 +120,16 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
+            ElevatedButton(
+                onPressed: () async {
+                  SharedPreferences pref = await SharedPreferences.getInstance();
+                  await pref.setInt("is_login", 1);
+                  Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => Pertemuan1(title: "Pertemuan 1",)),
+                  );
+                },
+                child: const Text('Login')
+            )
           ],
         ),
       ),

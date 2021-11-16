@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_72190345/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Pertemuan1 extends StatefulWidget {
   const Pertemuan1({Key? key, required this.title}) : super(key: key);
@@ -20,6 +22,7 @@ class Pertemuan1 extends StatefulWidget {
 
 class _Pertemuan1State extends State<Pertemuan1> {
   int _counter = 2;
+  final _formKey = GlobalKey<FormState>();
 
   void _incrementCounter() {
     setState(() {
@@ -46,9 +49,12 @@ class _Pertemuan1State extends State<Pertemuan1> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
+      body: Form(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
+        key: _formKey,
+        child : Container(
+        padding: EdgeInsets.all(20.0),
         child: Column(
           // Column is also a layout widget. It takes a list of children and
           // arranges them vertically. By default, it sizes itself to fit its
@@ -68,26 +74,37 @@ class _Pertemuan1State extends State<Pertemuan1> {
           children: <Widget>[
             TextFormField(
               decoration: new InputDecoration(
-                labelText: "Tes Input",
-                hintText: "Teks yang akan diinput formatnya adalah sbb",
-
-              ),
-            ),
-            Padding(
-                padding: EdgeInsets.all(5.0)
-            ),
-            TextFormField(
-              decoration: new InputDecoration(
-                  labelText: "Tes Input 2",
-                  hintText: "Teks yang akan diinput formatnya adalah sbb",
+                labelText: "Nama Lengkap",
+                hintText: "Contoh : Dimas Aji Setiawan",
+                icon: Icon(Icons.people),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5)
-                  )
+                  ),
+
+
               ),
+              validator: (value) {
+                if(value!.isEmpty){
+                  return 'nama tidak boleh kosong';
+                }
+                return null;
+              },
             ),
             ElevatedButton(
-                onPressed: (){},
-                child: const Text('Simpan')
+                onPressed: (){
+                  if(_formKey.currentState!.validate()) {}
+                },
+                child: const Text('Submit')
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  SharedPreferences pref = await SharedPreferences.getInstance();
+                  await pref.setInt("is_login", 0);
+                  Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => MyHomePage(title: "Halo PushReplacement",)),
+                  );
+                },
+                child: const Text('Logout')
             )
           ],
         ),
@@ -97,6 +114,7 @@ class _Pertemuan1State extends State<Pertemuan1> {
       //   tooltip: 'Increment',
       //   child: const Icon(Icons.add),
       // ), // This trailing comma makes auto-formatting nicer for build methods.
+    )
     );
   }
 }
