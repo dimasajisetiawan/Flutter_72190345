@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_72190345/pertemuan1.dart';
+import 'package:flutter_72190345/dashboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const Pertemuan1(title: 'Flutter Demo Home Page Buatan Sendiri'),
+      home: const Dashboard(title: 'Dashboard'),
     );
   }
 }
@@ -69,14 +69,16 @@ class _MyHomePageState extends State<MyHomePage> {
     int? isLogin = pref.getInt("is_login");
     if(isLogin == 1){
       Navigator.pushReplacement(context,
-      MaterialPageRoute(builder: (context) => Pertemuan1(title: "Pertemuan 1",)),
+      MaterialPageRoute(builder: (context) => Dashboard(title: "Pertemuan 1",)),
       );
     }
+    print(isLogin);
   }
 
   @override
   void initState(){
     navigateLogin();
+    super.initState();
   }
 
   @override
@@ -93,6 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
+
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
@@ -125,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   SharedPreferences pref = await SharedPreferences.getInstance();
                   await pref.setInt("is_login", 1);
                   Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => Pertemuan1(title: "Pertemuan 1",)),
+                    MaterialPageRoute(builder: (context) => Dashboard(title: "Dashboard",)),
                   );
                 },
                 child: const Text('Login')

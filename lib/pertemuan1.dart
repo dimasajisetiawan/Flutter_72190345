@@ -49,6 +49,21 @@ class _Pertemuan1State extends State<Pertemuan1> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
+        drawer: Drawer(
+          child: ListView(
+            children: <Widget> [
+              UserAccountsDrawerHeader(
+                  accountName: Text("Dimas Aji Setiawan"),
+                  accountEmail: Text("dimas.aji@si.ukdw.ac.id"),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Text("DAS",
+                style: TextStyle(fontSize: 20.0),),
+              ),)
+
+            ],
+          ),
+        ),
       body: Form(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
