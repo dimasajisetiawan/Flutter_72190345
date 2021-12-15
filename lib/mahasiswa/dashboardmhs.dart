@@ -1,6 +1,12 @@
+import 'dart:async';
+import 'package:flutter_72190345/apiservices.dart';
+import 'package:flutter_72190345/mahasiswa/updatemhs.dart';
+import 'package:flutter_72190345/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_72190345/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'addmhs.dart';
 
 class Dashboardmhs extends StatefulWidget {
   const Dashboardmhs({Key? key, required this.title}) : super(key: key);
@@ -21,19 +27,14 @@ class Dashboardmhs extends StatefulWidget {
 }
 
 class _DashboardmhsState extends State<Dashboardmhs> {
-  int _counter = 2;
   final _formKey = GlobalKey<FormState>();
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  List<Mahasiswa> lMhs = [];
+
+  FutureOr onGoBack(dynamic value){
+    setState(() {});
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -48,42 +49,78 @@ class _DashboardmhsState extends State<Dashboardmhs> {
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
           title: Text(widget.title),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: (){
+                Navigator.push(context,
+                MaterialPageRoute(builder: (context) => AddMhs(title : "Input Data Mahasiswa")),
+                ).then(onGoBack);
+              },
+            )
+          ],
         ),
-        body: Center(
-          // Center is a layout widget. It takes a single child and positions it
-          // in the middle of the parent.
-          key: _formKey,
-          child : Container(
-            padding: EdgeInsets.all(20.0),
-            child: Column(
-              // Column is also a layout widget. It takes a list of children and
-              // arranges them vertically. By default, it sizes itself to fit its
-              // children horizontally, and tries to be as tall as its parent.
-              //
-              // Invoke "debug painting" (press "p" in the console, choose the
-              // "Toggle Debug Paint" action from the Flutter Inspector in Android
-              // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-              // to see the wireframe for each widget.
-              //
-              // Column has various properties to control how it sizes itself and
-              // how it positions its children. Here we use mainAxisAlignment to
-              // center the children vertically; the main axis here is the vertical
-              // axis because Columns are vertical (the cross axis would be
-              // horizontal).
-              mainAxisAlignment: MainAxisAlignment.center,
+        body: FutureBuilder(
+          future: ApiServices().getMahasiswa(),
+          builder: (BuildContext context, AsyncSnapshot<List<Mahasiswa>?> snapshot) {
+    if(snapshot.hasError){
+    return Center(
+    child: Text(
+    "Something error : ${snapshot.error.toString()}"),
+    );
+    } else if (snapshot.connectionState == ConnectionState.done) {
+      lMhs = snapshot.data!;
+    return ListView.builder(
+    itemBuilder: (context, position){
+    return Card(
+    margin: new EdgeInsets.symmetric(horizontal: 5.0, vertical: 1.0),
+    child: Container(
+    child: ListTile(
+    title: Text(lMhs[position].nama!  + " - " + lMhs[position].nim!  ),
+    subtitle: Text(lMhs[position].email!),
+      leading: CircleAvatar(
+        backgroundImage: NetworkImage(lMhs[position].foto!),
+      ),
+      onLongPress: (){
+      showDialog(context: context,
+          builder: (_) => new AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                const Text(
-                  'Dashboard Mahasiswa',
+                TextButton(onPressed: (){
+                  Navigator.pop(context);
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => UpdateMhs(title:"Input Data Mahasiswa", mhs : lMhs[position], nimcari : lMhs[position].nim!)),
+                  ).then(onGoBack);
+                }, child: Text("Update")
                 ),
+                Divider(
+                  color : Colors.black,
+                  height: 20,
+                ),
+                TextButton(onPressed: () async {
+                  ApiServices().deleteMhs(lMhs[position].nim!);
+                  Navigator.pop(context);
+                  setState(() {});
+                }, child: Text("Delete")),
               ],
             ),
-          ),
-          // floatingActionButton: FloatingActionButton(
-          //   onPressed: _incrementCounter,
-          //   tooltip: 'Increment',
-          //   child: const Icon(Icons.add),
-          // ), // This trailing comma makes auto-formatting nicer for build methods.
-        )
+          ));
+      },
+    ),
+    ),
+    );
+    },
+    itemCount: lMhs.length,
+    );
+    } else {
+    return Center(
+    child: CircularProgressIndicator(),
+    );
+    }
+    },
+            )
     );
   }
 }
+
